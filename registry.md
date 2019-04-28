@@ -1,5 +1,5 @@
 # Docker Registry
-https://10.10.153.116:5001/v2
+
 ## repositories
 ### centos
 7
