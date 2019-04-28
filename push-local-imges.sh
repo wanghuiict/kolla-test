@@ -1,8 +1,15 @@
 #!/bin/bash
 
-# note: docker login at first
+USERN="username"
+PASSW="password"
+HOST1="1.2.3.4"
+PORT1="5000"
 
-REGISTRY="10.10.153.116:5001"
+. .secret
+
+REGISTRY="$HOST1:$PORT1"
+
+docker login -p $PASSW -u $USERN $REGISTRY
 
 IFS=$'\n'; for x in $(docker image ls |tail -n +2 |grep -v "^$REGISTRY");do
     unset IFS
