@@ -1,118 +1,118 @@
-#Docker Registry
+# Docker Registry
 https://10.10.153.116:5001/v2
-##repositories
-###centos
+## repositories
+### centos
 7
 latest
-###k8s.gcr.io/pause-amd64
+### k8s.gcr.io/pause-amd64
 3.1
-###kolla/centos-binary-base
+### kolla/centos-binary-base
 rocky
 8.1.0
-###kolla/centos-binary-etcd
+### kolla/centos-binary-etcd
 rocky
-###kolla/centos-binary-mariadb
+### kolla/centos-binary-mariadb
 rocky
-###kolla/centos-binary-neutron-base
+### kolla/centos-binary-neutron-base
 8.1.0
-###kolla/centos-binary-openstack-base
+### kolla/centos-binary-openstack-base
 8.1.0
-###kolla/centos-binary-openvswitch-base
+### kolla/centos-binary-openvswitch-base
 8.1.0
-###kolla/centos-source-ceph-mgr
+### kolla/centos-source-ceph-mgr
 rocky
-###kolla/centos-source-ceph-mon
+### kolla/centos-source-ceph-mon
 rocky
-###kolla/centos-source-ceph-osd
+### kolla/centos-source-ceph-osd
 rocky
-###kolla/centos-source-ceph-rgw
+### kolla/centos-source-ceph-rgw
 rocky
-###kolla/centos-source-chrony
+### kolla/centos-source-chrony
 rocky
-###kolla/centos-source-cinder-api
+### kolla/centos-source-cinder-api
 rocky
-###kolla/centos-source-cinder-backup
+### kolla/centos-source-cinder-backup
 rocky
-###kolla/centos-source-cinder-scheduler
+### kolla/centos-source-cinder-scheduler
 rocky
-###kolla/centos-source-cinder-volume
+### kolla/centos-source-cinder-volume
 rocky
-###kolla/centos-source-cron
+### kolla/centos-source-cron
 rocky
-###kolla/centos-source-fluentd
+### kolla/centos-source-fluentd
 rocky
-###kolla/centos-source-glance-api
+### kolla/centos-source-glance-api
 rocky
-###kolla/centos-source-haproxy
+### kolla/centos-source-haproxy
 rocky
-###kolla/centos-source-heat-api
+### kolla/centos-source-heat-api
 rocky
-###kolla/centos-source-heat-api-cfn
+### kolla/centos-source-heat-api-cfn
 rocky
-###kolla/centos-source-heat-engine
+### kolla/centos-source-heat-engine
 rocky
-###kolla/centos-source-horizon
+### kolla/centos-source-horizon
 rocky
-###kolla/centos-source-iscsid
+### kolla/centos-source-iscsid
 rocky
-###kolla/centos-source-keepalived
+### kolla/centos-source-keepalived
 rocky
-###kolla/centos-source-keystone
+### kolla/centos-source-keystone
 rocky
-###kolla/centos-source-keystone-fernet
+### kolla/centos-source-keystone-fernet
 rocky
-###kolla/centos-source-keystone-ssh
+### kolla/centos-source-keystone-ssh
 rocky
-###kolla/centos-source-kolla-toolbox
+### kolla/centos-source-kolla-toolbox
 rocky
-###kolla/centos-source-mariadb
+### kolla/centos-source-mariadb
 rocky
-###kolla/centos-source-memcached
+### kolla/centos-source-memcached
 rocky
-###kolla/centos-source-neutron-dhcp-agent
+### kolla/centos-source-neutron-dhcp-agent
 rocky
-###kolla/centos-source-neutron-l3-agent
+### kolla/centos-source-neutron-l3-agent
 rocky
-###kolla/centos-source-neutron-metadata-agent
+### kolla/centos-source-neutron-metadata-agent
 rocky
-###kolla/centos-source-neutron-openvswitch-agent
+### kolla/centos-source-neutron-openvswitch-agent
 rocky
-###kolla/centos-source-neutron-server
+### kolla/centos-source-neutron-server
 rocky
-###kolla/centos-source-nova-api
+### kolla/centos-source-nova-api
 rocky
-###kolla/centos-source-nova-compute
+### kolla/centos-source-nova-compute
 rocky
-###kolla/centos-source-nova-conductor
+### kolla/centos-source-nova-conductor
 rocky
-###kolla/centos-source-nova-consoleauth
+### kolla/centos-source-nova-consoleauth
 rocky
-###kolla/centos-source-nova-libvirt
+### kolla/centos-source-nova-libvirt
 rocky
-###kolla/centos-source-nova-novncproxy
+### kolla/centos-source-nova-novncproxy
 rocky
-###kolla/centos-source-nova-scheduler
+### kolla/centos-source-nova-scheduler
 rocky
-###kolla/centos-source-nova-ssh
+### kolla/centos-source-nova-ssh
 rocky
-###kolla/centos-source-openvswitch-db-server
+### kolla/centos-source-openvswitch-db-server
 rocky
-###kolla/centos-source-openvswitch-vswitchd
+### kolla/centos-source-openvswitch-vswitchd
 rocky
-###kolla/centos-source-placement-api
+### kolla/centos-source-placement-api
 rocky
 stein
-###kolla/centos-source-rabbitmq
+### kolla/centos-source-rabbitmq
 rocky
-###mirrorgooglecontainers/pause-amd64
+### mirrorgooglecontainers/pause-amd64
 3.1
-###nginx
+### nginx
 latest
-###nvidia/cuda
+### nvidia/cuda
 9.0-devel
-###nvidia/k8s-device-plugin
+### nvidia/k8s-device-plugin
 1.0.0-beta
-###registry
+### registry
 latest
-###tensorflow/tensorflow
+### tensorflow/tensorflow
 latest-gpu
