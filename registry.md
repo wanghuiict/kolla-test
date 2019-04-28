@@ -1,10 +1,19 @@
 # Docker Registry
 
 ## repositories
+### busybox
+latest
+
 ### centos
 7
 
 latest
+
+### centos-source-haproxy
+latest
+
+### centos-source-keepalived
+rocky
 
 ### k8s.gcr.io/pause-amd64
 3.1
@@ -135,6 +144,9 @@ rocky
 rocky
 
 ### kolla/centos-source-nova-novncproxy
+rocky
+
+### kolla/centos-source-nova-placement-api
 rocky
 
 ### kolla/centos-source-nova-scheduler
