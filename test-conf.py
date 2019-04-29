@@ -2,6 +2,13 @@ from oslo_config import cfg
 from kolla.common import config as common_config
 import sys
 
+import pbr.version
+
+version_info = pbr.version.VersionInfo('kolla')
+
+print version_info.__dict__
+print version_info.cached_version_string()
+
 '''
 test kolla conf options
 
@@ -12,6 +19,8 @@ e.g.:
 conf = cfg.ConfigOpts()
 # read default settings
 common_config.parse(conf, sys.argv[1:], prog='kolla-build')
+print('tag is %s'%(conf.tag))
+
 # call it to enable options.
 conf()
 

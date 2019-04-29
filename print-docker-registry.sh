@@ -1,13 +1,8 @@
 #!/bin/bash
 
-USERN="username"
-PASSW="password"
-HOST1="1.2.3.4"
-PORT1="5000"
+# output markdown document
 
-. ~/.kollatest_rc
-
-echo -e "# Docker Registry\n\n## repositories"
+echo -e "# Docker Registry\n\n## repositories\nhttps://$HOST1:$PORT1/v2/"
 
 repolist=($(echo "
 catal=$(curl -s -k https://$USERN:$PASSW@$HOST1:$PORT1/v2/_catalog)

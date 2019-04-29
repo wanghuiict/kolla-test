@@ -1,0 +1,91 @@
+#!/bin/bash
+
+if [ $# -eq 0 ];then
+  echo -e "create/push/print docker registry."
+  echo -e "Usage:\n\t$0 [options...] create|push|print"
+  echo -e "\nExamples:"
+  echo -e "    create docker registry (must be run on the registry host)"
+  echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] [-d registry_directory] create\n"
+  echo -e "    push local docker imges to registry host"
+  echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] push [[REPOSITORY[:TAG]]]\n"
+  echo -e "    print repositories w/ tags in docker registry"
+  echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] print"
+  echo -e "\nOptions:"
+  echo -e "    -h host                  docker registry hostname or ip address"
+  echo -e "    -P port                  docker registry service listen port"
+  echo -e "    -u username              docker registry login username"
+  echo -e "    -p password              docker registry password (WARNING: plain text!!!)"
+  echo -e "    -d registry_directory    docker registry root directory"
+  echo -e "\nFILE:"
+  echo -e "    ~/.kollatest_rc\n"
+  echo -e "  e.g."
+  echo -e "        USERN=\"testuser\""
+  echo -e "        PASSW=\"password\""
+  echo -e "        HOST1=\"10.10.153.116\""
+  echo -e "        PORT1=\"5001\""
+  echo -e "        REGISTRY_DIR=\"/home/kolla-registry\""
+  exit 0
+fi
+
+# default
+USERN="username"
+PASSW="password"
+HOST1="1.2.3.4"
+PORT1="5000"
+REGISTRY_DIR="/home/kolla-registry"
+
+# override above settings
+. ~/.kollatest_rc
+
+# options have highest priority
+while getopts ":u:p:h:P:d:" opt; do
+   case $opt in
+        u ) USERN=$OPTARG
+            ;;
+        p ) PASSW=$OPTARG
+            ;;
+        h ) HOST1=$OPTARG
+            ;;
+        P ) PORT1=$OPTARG
+            ;;
+        d ) REGISTRY_DIR=$OPTARG
+            ;;
+        ? ) echo "error input"
+            exit 1;;
+   esac
+done
+shift $(($OPTIND - 1))
+
+while [ -z "$USERN" ]; do
+    read -p "Input username: " USERN
+done
+while [ -z "$PASSW" ]; do
+    read -s -p "Input user password: " PASSW
+done
+while [ -z "$HOST1" ]; do
+    read -p "Input docker registry host/ip: " HOST1
+done
+while [ -z "$PORT1" ]; do
+    read -p "Input docker registry listen port: " PORT1
+done
+
+action=$1
+shift
+
+cd $(dirname $0)
+
+if [ "$action" == "create" ];then
+    while [ -z "$REGISTRY_DIR" ]; do
+        read -p "Input docker registry directory: " REGISTRY_DIR
+    done
+    . create-local-registry.sh "$@"
+elif [ "$action" == "push" ];then
+    . push-local-imges.sh "$@"
+elif [ "$action" == "print" ];then
+    . print-docker-registry.sh "$@"
+else
+  echo "ERROR: unknown subcommand $action." >&2
+  exit 1
+fi
+
+
