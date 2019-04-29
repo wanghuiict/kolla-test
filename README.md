@@ -1,5 +1,7 @@
 # test opensatck kolla
 
+test kolla on CentOS 7.x
+
 ## update private registry taglist
 
 ```
