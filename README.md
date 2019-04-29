@@ -18,7 +18,7 @@ a tool for creating/pushing/printing docker registry
 # ./kollatest 
 create/push/print docker registry.
 Usage:
-        ./kollatest [options...] create|push|print
+        ./kollatest [options...] create|push|print|cp-cert [PARAMETERS...]
 
 Examples:
     create docker registry (must be run on the registry host)
@@ -29,6 +29,8 @@ Examples:
 
     print repositories w/ tags in docker registry
         # ./kollatest [-u username] [-p password] [-h host] [-P port] print
+    copy certificate to remote host (must be run on the registry host after 'create')
+        # ./kollatest [-d registry_directory] cp-cert <remote>
 
 Options:
     -h host                  docker registry hostname or ip address

@@ -2,14 +2,16 @@
 
 if [ $# -eq 0 ];then
   echo -e "create/push/print docker registry."
-  echo -e "Usage:\n\t$0 [options...] create|push|print [PARAMETERS...]"
+  echo -e "Usage:\n\t$0 [options...] create|push|print|cp-cert [PARAMETERS...]"
   echo -e "\nExamples:"
   echo -e "    create docker registry (must be run on the registry host)"
   echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] [-d registry_directory] create\n"
   echo -e "    push local docker imges to registry host"
   echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] push [[REPOSITORY[:TAG]]]\n"
   echo -e "    print repositories w/ tags in docker registry"
-  echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] print"
+  echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] print\n"
+  echo -e "    copy certificate to remote host (must be run on the registry host after 'create')"
+  echo -e "        # $0 [-d registry_directory] cp-cert <remote>"
   echo -e "\nOptions:"
   echo -e "    -h host                  docker registry hostname or ip address"
   echo -e "    -P port                  docker registry service listen port"
@@ -83,6 +85,8 @@ elif [ "$action" == "push" ];then
     . push-local-imges.sh "$@"
 elif [ "$action" == "print" ];then
     . print-docker-registry.sh "$@"
+elif [ "$action" == "cp-cert" ];then
+    . copy-cert.sh "$@"
 else
   echo "ERROR: unknown subcommand $action." >&2
   exit 1
