@@ -1,6 +1,7 @@
 # Docker Registry
 
 ## repositories
+https://10.10.153.116:5001/v2/
 ### busybox
 latest
 
