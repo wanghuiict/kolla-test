@@ -5,7 +5,7 @@ PASSW="password"
 HOST1="1.2.3.4"
 PORT1="5000"
 
-. .secret
+. ~/.kollatest_rc
 
 echo -e "# Docker Registry\n\n## repositories"
 
