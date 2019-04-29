@@ -2,7 +2,7 @@
 
 if [ $# -eq 0 ];then
   echo -e "create/push/print docker registry."
-  echo -e "Usage:\n\t$0 [options...] create|push|print"
+  echo -e "Usage:\n\t$0 [options...] create|push|print [PARAMETERS...]"
   echo -e "\nExamples:"
   echo -e "    create docker registry (must be run on the registry host)"
   echo -e "        # $0 [-u username] [-p password] [-h host] [-P port] [-d registry_directory] create\n"
