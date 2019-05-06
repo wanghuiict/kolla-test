@@ -37,7 +37,7 @@ PORT1="5000"
 REGISTRY_DIR="/home/kolla-registry"
 
 # override above settings
-. ~/.kollatest_rc
+[ -f  ~/.kollatest_rc ] && { . ~/.kollatest_rc ; true; } || { echo "RC file ~/.kollatest_rc not found."; }
 
 # options have highest priority
 while getopts ":u:p:h:P:d:" opt; do
