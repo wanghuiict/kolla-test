@@ -1,0 +1,5 @@
+server ansible_host="{{ registry_host }}"
+
+[client]
+10.10.153.116
+10.10.144.201

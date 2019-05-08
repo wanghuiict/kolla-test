@@ -1,0 +1,17 @@
+---
+# install docker registry
+
+- name: deploy and start Docker Registry server
+  command: /usr/libexec/tncloud/kollatest/kollatest -h {{ inventory_hostname }} -P {{ registry_port }} -u {{ registry_user }} -p {{ registry_pass }} -d {{ registry_root }} create
+
+- name: copy certificate to local
+  copy:
+     src: "{{ registry_root }}/certs/registry.crt"
+     dest: /etc/pki/ca-trust/source/anchors/registry.crt
+  register: certcopy
+
+- name: build CA cert trust
+  command: update-ca-trust extract
+  notify: restart docker
+  when: certcopy.changed
+

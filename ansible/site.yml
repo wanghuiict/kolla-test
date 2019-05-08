@@ -1,0 +1,27 @@
+---
+
+- name: apply common configuration to all nodes
+  gather_facts: false
+  hosts: all
+  remote_user: root
+  roles:
+     - common
+
+- name: deploy private docker registry
+  gather_facts: false
+  hosts: server
+  remote_user: root
+  roles:
+    - registry
+
+- name: copy certificate to clients
+  gather_facts: false
+  hosts: client
+  remote_user: root
+  tasks:
+    - copy:
+       src: "{{ registry_root }}/certs/registry.crt"
+       dest: /etc/pki/ca-trust/source/anchors/registry.crt
+
+    - name: build CA cert trust
+      command: update-ca-trust extract

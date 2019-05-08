@@ -1,0 +1,5 @@
+registry_user: testuser
+registry_pass: password
+registry_host: 10.10.153.116
+registry_port: 5001
+registry_root: /home/kolla-registry
