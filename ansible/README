@@ -1,0 +1,5 @@
+## run playbook
+ansible-playbook -e "kollatest=/home/wanghui/kolla-work/kolla-test/kollatest" -v -i hosts site.yml
+
+## read source
+find . -type f |while read f;do echo -e "\e[31m======== $f ========\e[0m";cat $f;done

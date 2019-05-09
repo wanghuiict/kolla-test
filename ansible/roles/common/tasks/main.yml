@@ -1,4 +1,6 @@
 ---
 
-- name: Install tncloud-tools
-  yum: name=tncloud-tools state=latest
+- name: Install ca-certificates
+  yum: name=ca-certificates state=present
+- name: Install docker-ce-cli
+  yum: name=docker-ce-cli state=present

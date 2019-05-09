@@ -25,3 +25,11 @@
 
     - name: build CA cert trust
       command: update-ca-trust extract
+
+- name: verify client access registry
+  gather_facts: false
+  hosts: client
+  tasks:
+     - uri:
+           url: "https://{{ registry_user }}:{{ registry_pass }}@{{ registry_host }}:{{ registry_port }}/v2/"
+           validate_certs: no
