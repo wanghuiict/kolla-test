@@ -1,0 +1,48 @@
+#!/bin/bash
+
+show_help() {
+        echo -e "install/uninstall TianNi Openstack.\nUsage:\n\t$0 <install|destroy> [options...] [parameters...]\nOptions:"
+        echo -e "\t--help, -h              \tshow help."
+        echo -e "\nParameters:"
+        echo -e "\tinstall                 \tinstall openstack"
+        echo -e "\tdestroy                 \tuninstall openstack"
+}
+
+[ -z "$KOLLADIR" ] && . tn-openstack-var
+
+cmdopts=$(getopt --longoptions help \
+                     --options +h -- "$@")
+if [ $? -ne 0 ] ; then
+  echo "Terminating..." 1>&2
+  exit 1
+fi
+
+# set positional parameters
+eval set -- "$cmdopts"
+
+[ $# -eq 1 ] && { show_help; exit 0; }
+
+while true; do
+  case "$1" in
+    -h | --help )
+        show_help
+        exit ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+while true; do
+  case "$1" in
+    install )
+        shift
+        exec call-kolla-install.sh -t "$0 install" $@
+        exit $? ;;
+    destroy )
+        shift
+        exec call-kolla-uninstall.sh -t "$0" $@
+        exit $? ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done

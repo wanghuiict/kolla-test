@@ -1,0 +1,11 @@
+# default settings
+
+echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+export TIANNI_SRC=/dev/sr0
+export TIANNI_DIR=/media/cdrom
+
+export WORKDIR="/home/kolla"
+export VENVDIR="usr"
+export KOLLADIR="${WORKDIR}/${VENVDIR}/share/kolla-ansible"
+export ETCKOLLA="/etc/kolla"
+export INVENTORY="multinode"

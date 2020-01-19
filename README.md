@@ -2,6 +2,10 @@
 
 test kolla on CentOS 7.x
 
+## install-openstack.sh
+
+deploy opentack 
+
 ## update private registry taglist
 
 ```
