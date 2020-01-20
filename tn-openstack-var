@@ -1,6 +1,4 @@
 # default settings
-
-echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 export TIANNI_SRC=/dev/sr0
 export TIANNI_DIR=/media/cdrom
 

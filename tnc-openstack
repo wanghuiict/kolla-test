@@ -1,11 +1,12 @@
 #!/bin/bash
 
 show_help() {
-        echo -e "install/uninstall TianNi Openstack.\nUsage:\n\t$0 <install|destroy> [options...] [parameters...]\nOptions:"
+        echo -e "install/uninstall TianNi Openstack.\nUsage:\n\t$0 <install|destroy|test> [options...] [parameters...]\nOptions:"
         echo -e "\t--help, -h              \tshow help."
         echo -e "\nParameters:"
         echo -e "\tinstall                 \tinstall openstack"
         echo -e "\tdestroy                 \tuninstall openstack"
+        echo -e "\ttest                    \ttest kolla"
 }
 
 [ -z "$KOLLADIR" ] && . tn-openstack-var
@@ -42,6 +43,10 @@ while true; do
         shift
         # swap options and parameter 'destroy'
         exec call-kolla-uninstall.sh -t "$0 destroy [options...]" $@ destroy
+        exit $? ;;
+    test )
+        shift
+        exec call-kolla-test.sh -t "$0 test" $@
         exit $? ;;
     -- ) shift; break ;;
     * )

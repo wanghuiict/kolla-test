@@ -64,11 +64,19 @@ else
     . tn-openstack-common
 fi
 
-ansible-playbook --tags=mariadb --list-tasks --list-tags -i /etc/kolla/multinode -e @/etc/kolla/globals.yml -e @/etc/kolla/passwords.yml -e CONFIG_DIR=/etc/kolla  -e kolla_action=deploy /home/kolla/usr/share/kolla-ansible/ansible/site.yml
-exit
+if ! $skip_bootstrap; then
+    kolla-ansible -i $ETCKOLLA/$INVENTORY bootstrap-servers || exit 1
+fi
 
-kolla-ansible -i $ETCKOLLA/$INVENTORY bootstrap-servers && \
-kolla-ansible -i $ETCKOLLA/$INVENTORY prechecks && \
-kolla-ansible -i $ETCKOLLA/$INVENTORY deploy && \
-kolla-ansible -i $ETCKOLLA/$INVENTORY post-deploy
+if ! $skip_pre; then
+    kolla-ansible -i $ETCKOLLA/$INVENTORY prechecks || exit 2
+fi
+
+if ! $skip_deploy; then
+    kolla-ansible -i $ETCKOLLA/$INVENTORY deploy || exit 3
+fi
+
+if ! $skip_post; then
+    kolla-ansible -i $ETCKOLLA/$INVENTORY post-deploy || exit 4
+fi
 
