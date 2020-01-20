@@ -40,9 +40,12 @@ while true; do
         exit $? ;;
     destroy )
         shift
-        exec call-kolla-uninstall.sh -t "$0" $@
+        # swap options and parameter 'destroy'
+        exec call-kolla-uninstall.sh -t "$0 destroy [options...]" $@ destroy
         exit $? ;;
     -- ) shift; break ;;
-    * ) break ;;
+    * )
+        echo "error input" 1>&2
+        break ;;
   esac
 done

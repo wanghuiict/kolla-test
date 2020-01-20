@@ -8,9 +8,10 @@ show_help_install() {
         echo -e "\t--skip-deploy           \tskip kolla deploy."
         echo -e "\t--skip-post             \tskip kolla post-deploy."
         echo -e "\t--skip-all              \tskip kolla bootstrap, prechecks, deploy, post-deploy."
+        echo -e "\t--skip-install-kolla    \tskip install kolla."
 }
 
-cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-all,title:,help \
+cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-all,skip-install-kolla,title:,help \
                      --options +ht: -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
@@ -24,6 +25,7 @@ skip_bootstrap=false
 skip_pre=false
 skip_deploy=false
 skip_post=false
+skip_install_kolla=false
 myname=$0
 
 while true; do
@@ -34,6 +36,9 @@ while true; do
    -t | --title )
         myname="$2"
         shift 2;;
+    --skip-install-kolla )
+        skip_install_kolla=true
+        shift ;;
     --skip-bootstrap )
         skip_bootstrap=true; shift ;;
     --skip-pre )
@@ -53,7 +58,11 @@ while true; do
   esac
 done
 
-. tn-openstack-common
+if $skip_install_kolla; then
+    . tn-openstack-common --skip-install-kolla
+else
+    . tn-openstack-common
+fi
 
 ansible-playbook --tags=mariadb --list-tasks --list-tags -i /etc/kolla/multinode -e @/etc/kolla/globals.yml -e @/etc/kolla/passwords.yml -e CONFIG_DIR=/etc/kolla  -e kolla_action=deploy /home/kolla/usr/share/kolla-ansible/ansible/site.yml
 exit

@@ -38,6 +38,29 @@ ansible_ping_hosts() {
     ansible -i $ETCKOLLA/$INVENTORY all -m ping
 }
 
+
+cmdopts=$(getopt --longoptions skip-install-kolla \
+                 --options +k  -- "$@")
+if [ $? -ne 0 ] ; then
+  echo "Terminating..." 1>&2
+  exit 1
+fi
+
+# set positional parameters
+eval set -- "$cmdopts"
+
+skip_instlal_kolla=false
+
+while true; do
+  case "$1" in
+    k | --skip-install-kolla )
+        skip_instlal_kolla=true
+        shift ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
 # test and skip if defined
 [ -z "$KOLLADIR" ] && . tn-openstack-var
 
@@ -55,7 +78,11 @@ source ${VENVDIR}/bin/activate
 set +o xtrace
 
 # install kolla in venv
-install_kolla || exit -2
+if $skip_instlal_kolla; then
+    :
+else
+    install_kolla || exit -2
+fi
 
 # copy kolla config
 config_kolla || exit -3
