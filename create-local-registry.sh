@@ -27,7 +27,7 @@ mkdir -p certs auth
 
 ss -ltn |grep -w $PORT1
 [[ $? -eq 0 ]] || {
-    docker run -d -p ${PORT1}:5000 --restart=always --name registry \
+    docker run -d -p ${PORT1}:5000 --restart=always --name registry2 \
         -v $(pwd)/auth:/root/registry/auth \
         -e "REGISTRY_AUTH=htpasswd" \
         -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
