@@ -71,7 +71,7 @@ type easy_install || { echo "please install python setuptools" >&1; exit 1; }
 # copy files to work dir, then activate venv
 set -o xtrace
 mkdir -p $WORKDIR
-cp globals.yml $INVENTORY passwords.yml $WORKDIR
+cp globals.yml $INVENTORY passwords.yml $WORKDIR || exit -1
 cd $WORKDIR
 virtualenv $VENVDIR || exit -1
 source ${VENVDIR}/bin/activate

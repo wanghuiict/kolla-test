@@ -17,7 +17,7 @@ fi
 # set positional parameters
 eval set -- "$cmdopts"
 
-Usage="$0 [options...] destroy"
+Usage="$0 [options...|--] [-- kolla-ansible_options]"
 skip_install_kolla=false
 
 while true; do
@@ -42,12 +42,14 @@ else
     . tn-openstack-common
 fi
 
-if [ "$1" == "destroy" ]; then
-    # destroy --yes-i-really-really-mean-it
-    shift
-    kolla-ansible -i $ETCKOLLA/$INVENTORY destroy $@
-else
-    echo "error input" 1>&2
-    exit -2
-fi
+kolla-ansible -i $ETCKOLLA/$INVENTORY destroy $@
+
+#if [ "$1" == "destroy" ]; then
+#    # destroy --yes-i-really-really-mean-it
+#    shift
+#    kolla-ansible -i $ETCKOLLA/$INVENTORY destroy $@
+#else
+#    echo "error input" 1>&2
+#    exit -2
+#fi
 

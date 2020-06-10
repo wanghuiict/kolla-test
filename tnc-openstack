@@ -10,6 +10,8 @@ show_help() {
         echo -e "\ttest                    \ttest kolla"
         echo -e "Options:"
         echo -e "\t--help, -h              \tshow this help."
+        echo -e "Example:"
+        echo -e "\tINVENTORY=all-in-one tnc-openstack destroy -- -- --yes-i-really-really-mean-it"
 }
 
 [ -z "$KOLLADIR" ] && . tn-openstack-var
@@ -49,7 +51,7 @@ while true; do
     destroy )
         shift
         # swap options and parameter 'destroy'
-        exec call-kolla-uninstall.sh -t "$0 destroy [options...]" $@ destroy
+        exec call-kolla-uninstall.sh -t "$0 destroy [options...|--] [-- kolla-ansible_options]" $@ 
         exit $? ;;
     test )
         shift
