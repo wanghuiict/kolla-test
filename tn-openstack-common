@@ -39,7 +39,7 @@ ansible_ping_hosts() {
 }
 
 
-cmdopts=$(getopt --longoptions skip-install-kolla \
+cmdopts=$(getopt --longoptions skip-install-kolla,genpwd:\
                  --options +k  -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
@@ -50,12 +50,18 @@ fi
 eval set -- "$cmdopts"
 
 skip_instlal_kolla=false
+gen_pwd=false
+pwdfile=
 
 while true; do
   case "$1" in
     k | --skip-install-kolla )
         skip_instlal_kolla=true
         shift ;;
+    --genpwd )
+        gen_pwd=true
+        pwdfile=$2
+        shift 2;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -87,7 +93,11 @@ fi
 # copy kolla config
 config_kolla || exit -3
 
-# XXX: kolla-genpwd
+if $gen_pwd; then
+    echo "kolla-genpwd -p $pwdfile"
+    kolla-genpwd -p $pwdfile || exit -5
+fi
+
 cp globals.yml $INVENTORY passwords.yml $ETCKOLLA
 
 ansible_ping_hosts || exit -4
