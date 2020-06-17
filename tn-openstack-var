@@ -16,5 +16,6 @@ echo "KOLLADIR: $KOLLADIR"
 echo "ETCKOLLA: $ETCKOLLA"
 echo "INVENTORY: $INVENTORY"
 
-read -p "press any key to continue..." none
+#read -p "press any key to continue..." none
+sleep 2
 

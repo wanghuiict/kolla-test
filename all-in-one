@@ -282,6 +282,9 @@ nova
 [nova-spicehtml5proxy:children]
 nova
 
+[nova-consoleauth:children]
+nova
+
 [nova-compute-ironic:children]
 nova
 
