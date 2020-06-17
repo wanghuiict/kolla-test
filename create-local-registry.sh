@@ -13,7 +13,10 @@ mkdir -p $REGISTRY_DIR
 pushd $REGISTRY_DIR
 mkdir -p certs auth
 
+echo "current directory: $PWD"
+
 [[ -f certs/registry.key && -f certs/registry.crt ]] || {
+    echo "call openssl to create registry.crt......"
     openssl req -newkey rsa:4096 -nodes -sha256 \
         -keyout certs/registry.key -x509 \
         -days 365 -out certs/registry.crt || { popd; exit 3; }
@@ -27,7 +30,7 @@ mkdir -p certs auth
 
 ss -ltn |grep -w $PORT1
 [[ $? -eq 0 ]] || {
-    docker run -d -p ${PORT1}:5000 --restart=always --name registry2 \
+    docker run -d -p ${PORT1}:5000 --restart=always \
         -v $(pwd)/auth:/root/registry/auth \
         -e "REGISTRY_AUTH=htpasswd" \
         -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
