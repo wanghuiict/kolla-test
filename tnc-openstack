@@ -14,6 +14,30 @@ show_help() {
         echo -e "\tINVENTORY=all-in-one tnc-openstack destroy -- -- --yes-i-really-really-mean-it"
 }
 
+# add '.' to PATH 
+set_current_path() {
+    local found=false
+    local savedifs=$IFS
+    local x=
+    local dest=$(dirname $1)
+
+    IFS=$':'; for x in $PATH; do
+        if [ "$x" == "." ]; then
+            found=true
+            break
+        fi
+    done
+    IFS=$savedifs
+
+    if $found; then
+        return 0
+    fi
+
+    PATH=$dest:$PATH
+    export PATH
+    return 0
+}
+
 [ -z "$KOLLADIR" ] && . tn-openstack-var
 
 cmdopts=$(getopt --longoptions help \
@@ -37,6 +61,8 @@ while true; do
     * ) break ;;
   esac
 done
+
+set_current_path $0
 
 while true; do
   case "$1" in
