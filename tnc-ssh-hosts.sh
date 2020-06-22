@@ -268,6 +268,8 @@ fi
 }
 
 do_build() {
+    local optind=$OPTIND
+    OPTIND=0
     while getopts ":f:" opt; do
        case $opt in
             f ) sshosts=$OPTARG
@@ -277,6 +279,7 @@ do_build() {
        esac
     done
     shift $(($OPTIND - 1))
+    OPTIND=$optind
 
     if [ $# -eq 0 ]; then
         echored "no password input" >&2
@@ -336,8 +339,11 @@ do_build() {
 
 do_test() {
     local redolast=
-    while getopts ":f:r:" opt; do
-       case $opt in
+    local opt1=
+    local optind=$OPTIND
+    OPTIND=0
+    while getopts ":f:r:" opt1; do
+       case $opt1 in
             f ) sshosts=$OPTARG
                 ;;
             r ) redolast=$OPTARG
@@ -347,6 +353,7 @@ do_test() {
        esac
     done
     shift $(($OPTIND - 1))
+    OPTIND=$optind
 
     local user1=$(whoami)
     local homedir=$HOME
@@ -404,6 +411,8 @@ do_test() {
 }
 
 do_exec() {
+    local optind=$OPTIND
+    OPTIND=0
     while getopts ":f:" opt; do
        case $opt in
             f ) sshosts=$OPTARG
@@ -413,6 +422,7 @@ do_exec() {
        esac
     done
     shift $(($OPTIND - 1))
+    OPTIND=$optind
 
     if [ $# -eq 0 ]; then
         echo "no shell command input"

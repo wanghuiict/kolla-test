@@ -1,10 +1,11 @@
 #!/bin/bash
 
 show_help() {
-        echo -e "TianNi Openstack Tool"
+        echo -e "TianNi OpenStack Tool"
         echo -e "Usage:\n\t$0 <sub-command> [options...] [parameters...]"
         echo -e "Commands:"
         echo -e "\tregistry                \tdocker private registry for openstack"
+        echo -e "\tssh                     \tset up ssh trust among hosts"
         echo -e "\tinstall                 \tinstall openstack (kolla)"
         echo -e "\tdestroy                 \tuninstall openstack (kolla)"
         echo -e "\ttest                    \ttest kolla"
@@ -38,7 +39,7 @@ set_current_path() {
     return 0
 }
 
-[ -z "$KOLLADIR" ] && . tn-openstack-var
+[ -z "$KOLLADIR" ] && { echo "source tn-openstack-var"; . tn-openstack-var; }
 
 cmdopts=$(getopt --longoptions help \
                      --options +h -- "$@")
@@ -69,6 +70,10 @@ while true; do
     registry )
         shift
         exec kollatest -t "$0 registry" $@
+        exit $? ;;
+    ssh )
+        shift
+        exec tnc-ssh-hosts.sh -t "$0 ssh" $@
         exit $? ;;
     install )
         shift

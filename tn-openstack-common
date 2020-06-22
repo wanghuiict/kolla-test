@@ -68,7 +68,7 @@ while true; do
 done
 
 # test and skip if defined
-[ -z "$KOLLADIR" ] && . tn-openstack-var
+[ -z "$KOLLADIR" ] && { echo "source tn-openstack-var"; . tn-openstack-var; }
 
 # check on host
 type pip || { echo "pip not found" >&1; exit 1; }
