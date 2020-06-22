@@ -1,0 +1,129 @@
+#!/bin/bash
+
+echored() {
+  echo -e "\033[31m${*}\033[0m"
+}
+
+echogreen() {
+  echo -e "\033[32m${*}\033[0m"
+}
+
+check_cmd() {
+  for x in $(echo $*);do
+    if ! type ${x} &>/dev/null;then
+      echored "ERROR: command \`${x}\` not found"
+      exit 2
+    fi
+  done
+}
+
+# not support redirect '>'
+myexec() {
+echo ${1+"$@"}
+${1+"$@"}
+}
+
+strip_space() {
+  echo -e "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+strip_quota() {
+  echo -e "$1" | sed -e 's/^"//' -e 's/"$//'
+}
+
+enable_nfsserver() {
+     echo systemctl enable rpcbind nfs-server
+     systemctl enable rpcbind nfs-server || return 1
+     echo systemctl start rpcbind nfs-server
+     systemctl restart rpcbind nfs-server || return 2
+     if [ "$(systemctl is-enabled firewalld)" == "enabled" ]; then
+         firewall-cmd --permanent --zone public --add-service mountd
+         firewall-cmd --permanent --zone public --add-service rpc-bind
+         firewall-cmd --permanent --zone public --add-service nfs
+         firewall-cmd --reload
+     else
+         iptables -I INPUT -m state --state NEW -p tcp --dport 111 -j ACCEPT
+         iptables -I INPUT -m state --state NEW -p udp --dport 111 -j ACCEPT
+         iptables -I INPUT -m state --state NEW -p tcp --dport 2049 -j ACCEPT
+         iptables -I INPUT -m state --state NEW -p udp --dport 2049 -j ACCEPT
+         iptables -I INPUT -m state --state NEW -p tcp --dport 20048 -j ACCEPT
+         iptables -I INPUT -m state --state NEW -p udp --dport 20048 -j ACCEPT
+         service iptables save
+     fi
+     rpcinfo -p
+}
+
+enable_ntpserver() {
+    yum install -y ntp
+    cat > /etc/ntp.conf << eofntp
+restrict default nomodify
+
+server 0.cn.pool.ntp.org
+server 1.asia.pool.ntp.org
+server 2.asia.pool.ntp.org
+server 127.127.1.0
+
+restrict 0.0.0.0 mask 0.0.0.0 nomodify notrap
+eofntp
+    systemctl enable ntpd
+    systemctl restart ntpd
+    if [ "$(systemctl is-enabled firewalld)" == "enabled" ]; then
+        firewall-cmd --add-service=ntp --permanent
+        firewall-cmd --reload
+    else
+        iptables -I INPUT -p udp --dport 123 -j ACCEPT
+        iptables -I OUTPUT -p udp --sport 123 -j ACCEPT
+        service iptables save
+    fi
+}
+
+print_mac_ip() {
+    IFS=$'\n';for x in $(ip neigh show);do
+        unset IFS
+        read ip a a a mac a <<< $(echo $x)
+        [ ! -z "$a" ] && echo $mac $ip
+    done
+}
+
+get_localip() {
+    local ip=$(gethostip -d $(hostname -s))
+    echo $ip
+}
+
+set_ntp_sshosts() {
+    enable_ntpserver || return 1
+    local lip=$(get_localip)
+    [ -z "$lip" ] && return 2
+    tnc-ssh-hosts.sh exec "echo -e \"\$(crontab -l 2>/dev/null|sed '/ntpdate/d')\\n*/30 \"*\" \"*\" \"*\" \"*\" /usr/sbin/ntpdate ${lip}\"|crontab - && /usr/sbin/ntpdate ${lip}"
+}
+
+enable_neutron_l3ha() {
+    local f="/etc/neutron/neutron.conf"
+
+    if [ "$(systemctl is-enabled neutron-server)" == "enabled" ]; then
+        crudini --set $f DEFAULT l3_ha True
+        crudini --set $f DEFAULT allow_automatic_l3agent_failover True
+        crudini --set $f DEFAULT l3_ha_net_cidr 169.254.192.0/18
+        crudini --set $f DEFAULT max_l3_agents_per_router 2
+        crudini --set $f DEFAULT min_l3_agents_per_router 2
+        crudini --set $f DEFAULT dhcp_agents_per_network 2
+        local a=(l3_ha allow_automatic_l3agent_failover l3_ha_net_cidr max_l3_agents_per_router min_l3_agents_per_router dhcp_agents_per_network router_distributed)
+        for x in ${a[@]}; do
+            echo "$x = $(crudini --get $f DEFAULT $x)"
+        done
+        echo "systemctl restart neutron-server"
+        systemctl restart neutron-server
+    else
+        echo "neutron-server not enabled on current node."
+        return 1
+    fi
+}
+
+print_words() {
+    local x
+    local y
+    for y in $(for x in $* ;do echo $x; done |sort |uniq) ;do
+        echo -n "$y "
+    done
+}
+
