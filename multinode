@@ -1,28 +1,46 @@
 # These initial groups are the only groups required to be modified. The
 # additional groups are for more control of the environment.
 [control]
-#localhost       ansible_connection=local
+# These hostname must be resolvable from your deployment host
 control01
+control02
+control03
 
+# The above can also be specified as follows:
+#control[01:03]     ansible_user=kolla
+
+# The network nodes are where your l3-agent and loadbalancers will run
+# This can be the same as a host in the control group
 [network]
-#localhost       ansible_connection=local
+#network01
+#network02
 control01
+control02
 
 [compute]
-#localhost       ansible_connection=local
-control01
-
-[storage]
-#localhost       ansible_connection=local
-control01
+compute01
 
 [monitoring]
-#localhost       ansible_connection=local
+#monitoring01
 control01
+# When compute nodes and control nodes use different interfaces,
+# you need to comment out "api_interface" and other interfaces from the globals.yml
+# and specify like below:
+#compute01 neutron_external_interface=eth0 api_interface=em1 storage_interface=em1 tunnel_interface=em1
+
+[storage]
+control02
+control03
 
 [deployment]
-#localhost       ansible_connection=local
-control01
+localhost       ansible_connection=local
+
+[baremetal:children]
+control
+network
+compute
+storage
+monitoring
 
 # You can explicitly specify which hosts run each project by updating the
 # groups in the sections below. Common services are grouped together.
@@ -30,6 +48,7 @@ control01
 haproxy
 
 [chrony:children]
+control
 network
 compute
 storage
@@ -38,14 +57,17 @@ monitoring
 [collectd:children]
 compute
 
-[baremetal:children]
-control
-
 [grafana:children]
 monitoring
 
 [etcd:children]
 control
+
+[influxdb:children]
+monitoring
+
+[prometheus:children]
+monitoring
 
 [kafka:children]
 control
@@ -154,40 +176,25 @@ control
 [murano:children]
 control
 
-[ceph:children]
+[solum:children]
 control
 
 [ironic:children]
 control
 
-[influxdb:children]
-monitoring
-
-[prometheus:children]
-monitoring
+[ceph:children]
+control
 
 [magnum:children]
 control
 
-[qinling:children]
-control
-
 [sahara:children]
-control
-
-[solum:children]
 control
 
 [mistral:children]
 control
 
 [manila:children]
-control
-
-[panko:children]
-control
-
-[gnocchi:children]
 control
 
 [ceilometer:children]
@@ -203,10 +210,16 @@ compute
 [congress:children]
 control
 
+[panko:children]
+control
+
+[gnocchi:children]
+control
+
 [tacker:children]
 control
 
-[vitrage:children]
+[trove:children]
 control
 
 # Tempest
@@ -219,7 +232,7 @@ control
 [vmtp:children]
 control
 
-[trove:children]
+[vitrage:children]
 control
 
 [watcher:children]
@@ -279,6 +292,9 @@ nova
 [nova-super-conductor:children]
 nova
 
+[nova-consoleauth:children]
+nova
+
 [nova-novncproxy:children]
 nova
 
@@ -286,9 +302,6 @@ nova
 nova
 
 [nova-spicehtml5proxy:children]
-nova
-
-[nova-consoleauth:children]
 nova
 
 [nova-compute-ironic:children]
@@ -305,6 +318,9 @@ control
 neutron
 
 [neutron-l3-agent:children]
+neutron
+
+[neutron-lbaas-agent:children]
 neutron
 
 [neutron-metadata-agent:children]
@@ -423,16 +439,6 @@ barbican
 [barbican-worker:children]
 barbican
 
-# Trove
-[trove-api:children]
-trove
-
-[trove-conductor:children]
-trove
-
-[trove-taskmanager:children]
-trove
-
 # Heat
 [heat-api:children]
 heat
@@ -517,12 +523,12 @@ magnum
 [magnum-conductor:children]
 magnum
 
-# Qinling
-[qinling-api:children]
-qinling
+# Sahara
+[sahara-api:children]
+sahara
 
-[qinling-engine:children]
-qinling
+[sahara-engine:children]
+sahara
 
 # Solum
 [solum-api:children]
@@ -556,6 +562,19 @@ mistral
 [mistral-event-engine:children]
 mistral
 
+# Ceilometer
+[ceilometer-central:children]
+ceilometer
+
+[ceilometer-notification:children]
+ceilometer
+
+[ceilometer-compute:children]
+compute
+
+[ceilometer-ipmi:children]
+compute
+
 # Aodh
 [aodh-api:children]
 aodh
@@ -579,6 +598,16 @@ compute
 [cyborg-conductor:children]
 cyborg
 
+# Congress
+[congress-api:children]
+congress
+
+[congress-datasource:children]
+congress
+
+[congress-policy-engine:children]
+congress
+
 # Panko
 [panko-api:children]
 panko
@@ -593,35 +622,15 @@ gnocchi
 [gnocchi-metricd:children]
 gnocchi
 
-# Sahara
-[sahara-api:children]
-sahara
+# Trove
+[trove-api:children]
+trove
 
-[sahara-engine:children]
-sahara
+[trove-conductor:children]
+trove
 
-# Ceilometer
-[ceilometer-central:children]
-ceilometer
-
-[ceilometer-notification:children]
-ceilometer
-
-[ceilometer-compute:children]
-compute
-
-[ceilometer-ipmi:children]
-compute
-
-# Congress
-[congress-api:children]
-congress
-
-[congress-datasource:children]
-congress
-
-[congress-policy-engine:children]
-congress
+[trove-taskmanager:children]
+trove
 
 # Multipathd
 [multipathd:children]
@@ -768,15 +777,3 @@ monitoring
 
 [prometheus-elasticsearch-exporter:children]
 elasticsearch
-
-[prometheus-blackbox-exporter:children]
-monitoring
-
-[masakari-api:children]
-control
-
-[masakari-engine:children]
-control
-
-[masakari-monitors:children]
-compute

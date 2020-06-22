@@ -9,7 +9,7 @@
 # Kolla options
 ###############
 # Valid options are [ COPY_ONCE, COPY_ALWAYS ]
-#config_strategy: "COPY_ALWAYS"
+config_strategy: "COPY_ALWAYS"
 
 # Valid options are ['centos', 'debian', 'oraclelinux', 'rhel', 'ubuntu']
 kolla_base_distro: "centos"
@@ -19,7 +19,8 @@ kolla_base_distro: "centos"
 kolla_install_type: "source"
 
 # Valid option is Docker repository tag
-openstack_release: "ussuri"
+#openstack_release: "ussuri"
+openstack_release: "train"
 
 # Location of configuration overrides
 #node_custom_config: "/etc/kolla/config"
@@ -29,7 +30,7 @@ openstack_release: "ussuri"
 # All-In-One without haproxy and keepalived, you can set enable_haproxy to no
 # in "OpenStack options" section, and set this value to the IP of your
 # 'network_interface' as set in the Networking section below.
-kolla_internal_vip_address: "10.10.144.192"
+kolla_internal_vip_address: "10.10.144.189"
 
 # This is the DNS name that maps to the kolla_internal_vip_address VIP. By
 # default it is the same as kolla_internal_vip_address.
@@ -53,10 +54,11 @@ kolla_internal_vip_address: "10.10.144.192"
 # Below is an example of a private repository with authentication. Note the
 # Docker registry password can also be set in the passwords.yml file.
 
-#docker_registry: "172.16.0.10:4000"
-#docker_namespace: "companyname"
-#docker_registry_username: "sam"
-#docker_registry_password: "correcthorsebatterystaple"
+docker_registry: "10.10.153.116:5001"
+docker_namespace: "kolla"
+docker_registry_username: "testuser"
+#set in password.yml docker_registry_password: "password"
+#enable_docker_repo: "false"
 
 ###################
 # Messaging options
@@ -70,6 +72,7 @@ kolla_internal_vip_address: "10.10.144.192"
 #om_rpc_port: "{{ qdrouterd_port }}"
 #om_rpc_group: "qdrouterd"
 
+neutron_legacy_iptables: "yes"
 
 ##############################
 # Neutron - Networking Options
@@ -169,7 +172,7 @@ neutron_plugin_agent: "openvswitch"
 ###################
 # Use these options to set the various log levels across all OpenStack projects
 # Valid options are [ True, False ]
-#openstack_logging_debug: "False"
+openstack_logging_debug: "True"
 
 # Valid options are [ none, novnc, spice, rdp ]
 #nova_console: "novnc"
@@ -177,7 +180,7 @@ neutron_plugin_agent: "openvswitch"
 # These roles are required for Kolla to be operation, however a savvy deployer
 # could disable some of these required roles and run their own services.
 #enable_glance: "{{ enable_openstack_core | bool }}"
-enable_haproxy: "no"
+enable_haproxy: "yes"
 #enable_keepalived: "{{ enable_haproxy | bool }}"
 #enable_keystone: "{{ enable_openstack_core | bool }}"
 #enable_mariadb: "yes"
@@ -200,7 +203,7 @@ enable_ceph: "no"
 #enable_ceph_nfs: "no"
 #enable_ceph_dashboard: "{{ enable_ceph | bool }}"
 #enable_chrony: "yes"
-#enable_cinder: "no"
+enable_cinder: "no"
 #enable_cinder_backup: "yes"
 #enable_cinder_backend_hnas_iscsi: "no"
 #enable_cinder_backend_hnas_nfs: "no"
@@ -216,7 +219,7 @@ enable_ceph: "no"
 #enable_destroy_images: "no"
 #enable_elasticsearch: "{{ 'yes' if enable_central_logging | bool or enable_freezer | bool or enable_osprofiler | bool or enable_skydive | bool or enable_monasca | bool else 'no' }}"
 #enable_etcd: "no"
-#enable_fluentd: "yes"
+enable_fluentd: "yes"
 #enable_freezer: "no"
 #enable_gnocchi: "no"
 #enable_grafana: "no"
