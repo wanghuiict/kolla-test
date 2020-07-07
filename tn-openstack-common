@@ -39,7 +39,7 @@ ansible_ping_hosts() {
 }
 
 
-cmdopts=$(getopt --longoptions skip-install-kolla,genpwd:\
+cmdopts=$(getopt --longoptions skip-install-kolla,genpwd\
                  --options +k  -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
@@ -51,7 +51,6 @@ eval set -- "$cmdopts"
 
 skip_instlal_kolla=false
 gen_pwd=false
-pwdfile=
 
 while true; do
   case "$1" in
@@ -60,8 +59,7 @@ while true; do
         shift ;;
     --genpwd )
         gen_pwd=true
-        pwdfile=$2
-        shift 2;;
+        shift ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
@@ -77,7 +75,8 @@ type easy_install || { echo "please install python setuptools" >&1; exit 1; }
 # copy files to work dir, then activate venv
 set -o xtrace
 mkdir -p $WORKDIR
-cp globals.yml $INVENTORY passwords.yml $WORKDIR || exit -1
+pwdfile="$(pwd)/passwords.yml"
+cp globals.yml $INVENTORY $WORKDIR || exit -1
 cd $WORKDIR
 virtualenv $VENVDIR || exit -1
 source ${VENVDIR}/bin/activate
@@ -95,9 +94,13 @@ config_kolla || exit -3
 
 if $gen_pwd; then
     echo "kolla-genpwd -p $pwdfile"
+    cp ${KOLLADIR}/etc_examples/kolla/passwords.yml $pwdfile
     kolla-genpwd -p $pwdfile || exit -5
+    echo "please set docker_registry_password"
+    sleep 3
+    vim $pwdfile
 fi
 
-cp globals.yml $INVENTORY passwords.yml $ETCKOLLA
+cp globals.yml $INVENTORY $pwdfile $ETCKOLLA
 
 ansible_ping_hosts || exit -4

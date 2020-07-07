@@ -9,10 +9,10 @@ show_help_install() {
         echo -e "\t--skip-post             \tskip kolla post-deploy."
         echo -e "\t--skip-all              \tskip kolla bootstrap, prechecks, deploy, post-deploy."
         echo -e "\t--skip-install-kolla    \tskip install kolla."
-        echo -e "\t--genpwd <password.yml> \tcall kolla-genpwd."
+        echo -e "\t--genpwd                \tcall kolla-genpwd."
 }
 
-cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-all,skip-install-kolla,genpwd:,title:,help \
+cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-all,skip-install-kolla,genpwd,title:,help \
                      --options +ht: -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
@@ -28,7 +28,7 @@ skip_deploy=false
 skip_post=false
 skip_install_kolla=false
 myname=$0
-pwdfile=
+gen_pwd=false
 
 while true; do
   case "$1" in
@@ -42,8 +42,8 @@ while true; do
         skip_install_kolla=true
         shift ;;
     --genpwd )
-        pwdfile="$2"
-        shift 2;;
+        gen_pwd=true
+        shift ;;
     --skip-bootstrap )
         skip_bootstrap=true; shift ;;
     --skip-pre )
@@ -70,8 +70,8 @@ if $skip_install_kolla; then
     argstr1="--skip-install-kolla "
 fi
 
-if [ ! -z "$pwdfile" ]; then
-    argstr1="$argstr1 --genpwd $pwdfile "
+if $gen_pwd; then
+    argstr1="$argstr1 --genpwd "
 fi
 
 . tn-openstack-common $argstr1
