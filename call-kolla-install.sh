@@ -63,31 +63,32 @@ while true; do
   esac
 done
 
-argstr=
+argstr1=
+argstr2=$@
 
 if $skip_install_kolla; then
-    argstr="--skip-install-kolla "
+    argstr1="--skip-install-kolla "
 fi
 
 if [ ! -z "$pwdfile" ]; then
-    argstr="$argstr --genpwd $pwdfile "
+    argstr1="$argstr1 --genpwd $pwdfile "
 fi
 
-. tn-openstack-common $argstr
+. tn-openstack-common $argstr1
 
 if ! $skip_bootstrap; then
-    kolla-ansible -i $ETCKOLLA/$INVENTORY bootstrap-servers || exit 1
+    kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 bootstrap-servers || exit 1
 fi
 
 if ! $skip_pre; then
-    kolla-ansible -i $ETCKOLLA/$INVENTORY prechecks || exit 2
+    kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 prechecks || exit 2
 fi
 
 if ! $skip_deploy; then
-    kolla-ansible -i $ETCKOLLA/$INVENTORY deploy || exit 3
+    kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 deploy || exit 3
 fi
 
 if ! $skip_post; then
-    kolla-ansible -i $ETCKOLLA/$INVENTORY post-deploy || exit 4
+    kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 post-deploy || exit 4
 fi
 

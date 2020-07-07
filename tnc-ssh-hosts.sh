@@ -8,7 +8,7 @@ print_help() {
   local hostfileexample="\t#comment line\n\t10.10.150.8 tncloud01\n\t10.10.150.8 tncloud01-ssd\n\t10.10.150.9 tncloud02\n\t10.10.150.10 tncloud03"
   echo -e "Build SSH trust among many hosts, using current user."
   echo -e "Usage:"
-  echo -e "    $myname build [-f <ssh host file>] password"
+  echo -e "    $myname build [-f <ssh host file>] [password]"
   echo -e "    $myname test [-f <ssh host file>] [-r redofile]"
   echo -e "    $myname exec [-f <ssh host file>] cmd"
   echo -e "Hosts:\n  filename : default is sshosts, or specify by -f .\n  content  : ipaddr and one hostname on each line.\n    e.g.\n${hostfileexample}"
@@ -268,6 +268,13 @@ fi
 }
 
 do_build() {
+    local pass1=
+    local user1=$(whoami)
+    local homedir=$HOME
+    local ipself=
+    local hostself=
+    local hostarr=()
+
     local optind=$OPTIND
     OPTIND=0
     while getopts ":f:" opt; do
@@ -283,19 +290,16 @@ do_build() {
 
     if [ $# -eq 0 ]; then
         echored "no password input" >&2
-        exit 1
+        read -s -p "ssh login password:" pass1
+        [ -n "$pass1" ] || exit 1
+    else
+        pass1=$1
     fi
+
     if [ ! -f $sshosts ];then
         echored "ssh hostfile $sshosts not found" >&2
         exit 1
     fi
-
-    local pass1=$1
-    local user1=$(whoami)
-    local homedir=$HOME
-    local ipself=
-    local hostself=
-    local hostarr=()
 
     local i=0
     while read ip host; do
@@ -411,12 +415,15 @@ do_test() {
 }
 
 do_exec() {
+    local host1=
     local optind=$OPTIND
     OPTIND=0
-    while getopts ":f:" opt; do
+    while getopts ":f:h:" opt; do
        case $opt in
             f ) sshosts=$OPTARG
-                ;;
+                shift 2;;
+            h ) host1=$OPTARG
+                shift 2;;
             ? ) echo "error input"
                 exit 1;;
        esac
@@ -488,6 +495,7 @@ while true; do
         ;;
     exec )
         sshosts="sshosts"
+        echo do_exec $*
         do_exec $*
         exit
         ;;
