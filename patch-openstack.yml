@@ -1,0 +1,60 @@
+---
+- name: patch keystone v3 for kolla/centos-source-keystone:train
+  #hosts: keystone:children
+  hosts: test-deploy-test
+  gather_facts: false
+  tasks:
+    - name: check keystone image version exactly
+      shell: |
+          [[ $(docker inspect --format="{""{".Image"}""}" keystone) == "sha256:46656a799586c6b693fe710cfc391189515436551ea9606f23bdf7e8b576b211" ]]
+      register: found
+      ignore_errors: True
+
+    - name: create patch file /tmp/keystonev3.patch
+      shell:
+         cmd: |
+           cat > /tmp/keystonev3.patch <<'EOF'
+           --- old/keystone/resource/core.py   2020-07-21 19:33:10.978351358 +0800
+           +++ new/keystone/resource/core.py   2020-07-21 20:47:34.003946027 +0800
+           @@ -238,6 +238,22 @@ class Manager(manager.Manager):
+            
+                    assignment.COMPUTED_ASSIGNMENTS_REGION.invalidate()
+            
+           +        # add default user to new project.
+           +        username = 'freezer'
+           +        try:
+           +            user_id = PROVIDERS.identity_api.get_user_by_name(username, CONF.identity.default_domain_id)['id']
+           +            user_projects = PROVIDERS.assignment_api.list_projects_for_user(user_id)
+           +            for proj in user_projects:
+           +                if proj['name'] == 'service': #wanghuiict: only select 'service' project ?
+           +                    user_project_id = proj['id']
+           +                    roles = PROVIDERS.assignment_api.get_roles_for_user_and_project(user_id, user_project_id)
+           +                    for x in roles:
+           +                        role_id = PROVIDERS.role_api.get_role(x)['id']
+           +                        PROVIDERS.assignment_api.add_role_to_user_and_project(user_id, project_id, role_id)
+           +                    break
+           +        except exception.UserNotFound as _e:
+           +                LOG.warning('skip adding nonexistent user %s to project %s.'%(username, project['name']))
+           +
+                    return ret
+            
+                def assert_domain_enabled(self, domain_id, domain=None):
+           EOF
+      when: found is succeeded
+
+    - name: apply patch file /tmp/keystonev3.patch
+      shell: |
+        docker cp keystone:/var/lib/kolla/venv/lib/python2.7/site-packages/keystone/resource/core.py /tmp/core.py || exit 1
+        cd /tmp/
+        # can be failed
+        patch --forward -R -p3 < keystonev3.patch
+        # can NOT be failed
+        patch --forward -p3 < keystonev3.patch || exit 1
+        docker cp /tmp/core.py keystone:/var/lib/kolla/venv/lib/python2.7/site-packages/keystone/resource/core.py
+      when: found is succeeded
+
+    - name: restart keystone
+      shell: |
+          docker restart keystone
+      when: found is succeeded
+

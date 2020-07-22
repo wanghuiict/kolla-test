@@ -53,3 +53,9 @@ FILE:
         PORT1="5001"
         REGISTRY_DIR="/home/kolla-registry"
 ```
+
+## patch openstack example
+
+```
+ansible-playbook -v -i multinode patch-openstack.yml 
+```
