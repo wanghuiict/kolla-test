@@ -1,0 +1,32 @@
+---
+- name: update keystone for kolla/centos-source-keystone:train
+  hosts: keystone:children
+  #hosts: test-deploy-test
+  gather_facts: false
+  tasks:
+    - name: check keystone image version exactly
+      shell: |
+          [[ $(docker inspect --format="{""{".Image"}""}" keystone) == "sha256:46656a799586c6b693fe710cfc391189515436551ea9606f23bdf7e8b576b211" ]]
+      register: found
+      ignore_errors: True
+
+    - name: download keystone-latest.tar.gz
+      shell:
+         cmd: |
+             cd /tmp/
+             wget http://10.10.131.3/images/tianni/keystone-latest.tar.gz
+      when: found is succeeded
+
+    - name: apply keystone updates
+      shell: |
+        wdir=$(mktemp -d -p /tmp)
+        cd /tmp/
+        tar zxf keystone-latest.tar.gz -C $wdir || exit 1
+        docker cp ${wdir}/keystone keystone:/var/lib/kolla/venv/lib/python2.7/site-packages/
+      when: found is succeeded
+
+    - name: restart keystone
+      shell: |
+          docker restart keystone
+      when: found is succeeded
+

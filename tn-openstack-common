@@ -13,6 +13,7 @@ install_kolla() {
     has_tianni
     if [ $? -eq 0 ]; then
         pip install --upgrade --no-index --find-links ${TIANNI_DIR}/pip/ ${upgrade[@]}
+        pip install --no-index --find-links ${TIANNI_DIR}/pip/ pbr
         pip install --no-index --find-links ${TIANNI_DIR}/pip/ ${install[@]}
     else
         pip install --upgrade ${upgrade[@]}

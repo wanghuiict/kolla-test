@@ -54,8 +54,14 @@ FILE:
         REGISTRY_DIR="/home/kolla-registry"
 ```
 
-## patch openstack example
+## patch openstack example (deprecated)
 
 ```
 ansible-playbook -v -i multinode patch-openstack.yml 
+```
+
+## apply keystone update
+
+```
+ansible-playbook -i multinode apply-updates.yml 
 ```
