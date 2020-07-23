@@ -8,6 +8,7 @@ show_help() {
         echo -e "\tssh                     \tset up ssh trust among hosts"
         echo -e "\tinstall                 \tinstall openstack (kolla)"
         echo -e "\tdestroy                 \tuninstall openstack (kolla)"
+        echo -e "\tmariadb_recovery        \tmariadb recovery (kolla)"
         echo -e "\ttest                    \ttest kolla"
         echo -e "Options:"
         echo -e "\t--help, -h              \tshow this help."
@@ -83,6 +84,10 @@ while true; do
         shift
         # swap options and parameter 'destroy'
         exec call-kolla-uninstall.sh -t "$0 destroy [options...|--] [-- kolla-ansible_options]" $@ 
+        exit $? ;;
+    mariadb_recovery )
+        shift
+        exec call-kolla-mariadb-recovery.sh -t "$0 mariadb_recovery [options...|--] [-- kolla-ansible_options]" $@ 
         exit $? ;;
     test )
         shift
