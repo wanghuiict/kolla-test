@@ -312,7 +312,7 @@ do_build() {
         fi
         echo $ip $host
         if [ "$user1" == "root" ]; then
-            sed -i '/^'${ip}'/d' /etc/hosts
+            sed -i '/^\b${ip}\b/d' /etc/hosts
             echo "$ip $host" >> /etc/hosts
         fi
         if [ -z $ipself ]; then
