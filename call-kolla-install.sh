@@ -7,12 +7,13 @@ show_help_install() {
         echo -e "\t--skip-pre              \tskip kolla prechecks."
         echo -e "\t--skip-deploy           \tskip kolla deploy."
         echo -e "\t--skip-post             \tskip kolla post-deploy."
-        echo -e "\t--skip-all              \tskip kolla bootstrap, prechecks, deploy, post-deploy."
+        echo -e "\t--skip-extra            \tskip tasks in extras.yml"
+        echo -e "\t--skip-all              \tskip kolla bootstrap, prechecks, deploy, post-deploy and extra"
         echo -e "\t--skip-install-kolla    \tskip install kolla."
         echo -e "\t--genpwd                \tcall kolla-genpwd."
 }
 
-cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-all,skip-install-kolla,genpwd,title:,help \
+cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-extra,skip-all,skip-install-kolla,genpwd,title:,help \
                      --options +ht: -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
@@ -26,6 +27,7 @@ skip_bootstrap=false
 skip_pre=false
 skip_deploy=false
 skip_post=false
+skip_extra=false
 skip_install_kolla=false
 myname=$0
 gen_pwd=false
@@ -52,11 +54,14 @@ while true; do
         skip_deploy=true; shift ;;
     --skip-post )
         skip_post=true; shift ;;
+    --skip-extra )
+        skip_extra=true; shift ;;
     --skip-all )
         skip_bootstrap=true
         skip_pre=true
         skip_deploy=true
         skip_post=true
+        skip_extra=true
         shift ;;
     -- ) shift; break ;;
     * ) break ;;
@@ -92,3 +97,7 @@ if ! $skip_post; then
     kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 post-deploy || exit 4
 fi
 
+if ! $skip_extra; then
+    echo -e "\nansible-playbook -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml"
+    ansible-playbook -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml || exit 5
+fi

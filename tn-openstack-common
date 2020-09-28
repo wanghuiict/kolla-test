@@ -77,7 +77,7 @@ type easy_install || { echo "please install python setuptools" >&1; exit 1; }
 set -o xtrace
 mkdir -p $WORKDIR
 pwdfile="$(pwd)/passwords.yml"
-cp globals.yml $INVENTORY $WORKDIR || exit -1
+cp globals.yml $INVENTORY extras.yml $WORKDIR || exit -1
 cd $WORKDIR
 virtualenv $VENVDIR || exit -1
 source ${VENVDIR}/bin/activate
