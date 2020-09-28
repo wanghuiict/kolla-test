@@ -2,38 +2,76 @@
 # additional groups are for more control of the environment.
 [control]
 # These hostname must be resolvable from your deployment host
-control01
-control02
-control03
+#control01 
+#control02 
+#control03 
+gb21
 
 # The above can also be specified as follows:
-#control[01:03]     ansible_user=kolla
+#control[01:03]     ansible_user=kolla 
+
+[control:vars]
+network_interface=enp6s0
+neutron_external_interface=enp7s0
+
+[x86_64_compute]
+hby-238e
+
+[gpu_154_36]
+gpu-154-36-v100
+
+[host_676193]
+host-676193
+
+[x86_64_compute:vars]
+#ansible_python_interpreter=/usr/bin/python2
+network_interface=enp5s0f1
+neutron_external_interface=enp5s0f0
+nova_conductor_tag=train
+nova_conductor_distro=centos
+
+[gpu_154_36:vars]
+network_interface=eno2
+neutron_external_interface=brtest
+nova_conductor_tag=train
+nova_conductor_distro=centos
+
+[host_676193:vars]
+network_interface=enp1s0f0
+neutron_external_interface=brtest
+nova_conductor_tag=train
+nova_conductor_distro=centos
 
 # The network nodes are where your l3-agent and loadbalancers will run
 # This can be the same as a host in the control group
 [network]
 #network01
 #network02
-control01
-control02
+#control01 
+#control02
+gb21
 
-[compute]
-compute01
+[compute:children]
+x86_64_compute
+gpu_154_36
+host_676193
 
 [monitoring]
 #monitoring01
-control01
+#control01 
 # When compute nodes and control nodes use different interfaces,
 # you need to comment out "api_interface" and other interfaces from the globals.yml
 # and specify like below:
 #compute01 neutron_external_interface=eth0 api_interface=em1 storage_interface=em1 tunnel_interface=em1
+gb21
 
 [storage]
-control02
-control03
+#control02 
+#control03
+gb21
 
 [deployment]
-localhost       ansible_connection=local
+localhost       ansible_connection=local 
 
 [baremetal:children]
 control

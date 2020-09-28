@@ -2,27 +2,33 @@
 # additional groups are for more control of the environment.
 [control]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 [network]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 [compute]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 [storage]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 [monitoring]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 [deployment]
 #localhost       ansible_connection=local
-control01
+#test-deploy-test
+gb21
 
 # You can explicitly specify which hosts run each project by updating the
 # groups in the sections below. Common services are grouped together.
