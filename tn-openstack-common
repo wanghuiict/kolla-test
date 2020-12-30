@@ -40,8 +40,8 @@ ansible_ping_hosts() {
 }
 
 
-cmdopts=$(getopt --longoptions skip-install-kolla,genpwd\
-                 --options +k  -- "$@")
+cmdopts=$(getopt --longoptions skip-install-kolla,genpwd,confdir:\
+                 --options +kd:  -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
   exit 1
@@ -52,12 +52,16 @@ eval set -- "$cmdopts"
 
 skip_instlal_kolla=false
 gen_pwd=false
+confdir=.
 
 while true; do
   case "$1" in
     k | --skip-install-kolla )
         skip_instlal_kolla=true
         shift ;;
+    -d | --confdir )
+        confdir="$2"
+        shift 2;;
     --genpwd )
         gen_pwd=true
         shift ;;
@@ -76,8 +80,8 @@ type easy_install || { echo "please install python setuptools" >&1; exit 1; }
 # copy files to work dir, then activate venv
 set -o xtrace
 mkdir -p $WORKDIR
-pwdfile="$(pwd)/passwords.yml"
-cp globals.yml $INVENTORY extras.yml $WORKDIR || exit -1
+pwdfile="$(cd "$(dirname $confdir/passwords.yml)";pwd)/$(basename $confdir/passwords.yml)"
+cp $confdir/globals.yml $confdir/$INVENTORY extras.yml $WORKDIR || exit -1
 cd $WORKDIR
 virtualenv $VENVDIR || exit -1
 source ${VENVDIR}/bin/activate
@@ -102,6 +106,6 @@ if $gen_pwd; then
     vim $pwdfile
 fi
 
-cp globals.yml $INVENTORY $pwdfile $ETCKOLLA
+cp globals.yml $INVENTORY $pwdfile $ETCKOLLA || exit -1
 
 ansible_ping_hosts || exit -4

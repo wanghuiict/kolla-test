@@ -11,10 +11,14 @@ show_help_install() {
         echo -e "\t--skip-all              \tskip kolla bootstrap, prechecks, deploy, post-deploy and extra"
         echo -e "\t--skip-install-kolla    \tskip install kolla."
         echo -e "\t--genpwd                \tcall kolla-genpwd."
+        echo -e "\t--confdir, -d <dir>     \tdirectory of scratch passwords.yml, globals.yml and"
+        echo -e "\t                        \tINVENTORY(e.g. multinode)"
+        echo -e "Example:"
+        echo -e "\t$myname --skip-install-kolla --confdir work/149_28 --skip-extra"
 }
 
-cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-extra,skip-all,skip-install-kolla,genpwd,title:,help \
-                     --options +ht: -- "$@")
+cmdopts=$(getopt --longoptions skip-bootstrap,skip-pre,skip-deploy,skip-post,skip-extra,skip-all,skip-install-kolla,genpwd,title:,confdir:,help \
+                     --options +ht:d: -- "$@")
 if [ $? -ne 0 ] ; then
   echo "Terminating..." 1>&2
   exit 1
@@ -31,6 +35,7 @@ skip_extra=false
 skip_install_kolla=false
 myname=$0
 gen_pwd=false
+confdir=.
 
 while true; do
   case "$1" in
@@ -39,6 +44,9 @@ while true; do
         exit ;;
    -t | --title )
         myname="$2"
+        shift 2;;
+   -d | --confdir )
+        confdir="$2"
         shift 2;;
     --skip-install-kolla )
         skip_install_kolla=true
@@ -79,7 +87,7 @@ if $gen_pwd; then
     argstr1="$argstr1 --genpwd "
 fi
 
-. tn-openstack-common $argstr1
+. tn-openstack-common $argstr1 --confdir $confdir
 
 if ! $skip_bootstrap; then
     kolla-ansible -i $ETCKOLLA/$INVENTORY $argstr2 bootstrap-servers || exit 1
