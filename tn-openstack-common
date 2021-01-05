@@ -94,6 +94,12 @@ else
     install_kolla || exit -2
 fi
 
+# check kolla verison
+if [ "$(pip show kolla-ansible |grep "^Version" |awk '{print $2}')" != "$KOLLAVER" ] ;then
+  echo "ERROR: kolla-ansible version mismatch!" >&1
+  exit -2
+fi
+
 # copy kolla config
 config_kolla || exit -3
 
