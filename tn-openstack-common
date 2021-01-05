@@ -81,7 +81,7 @@ type easy_install || { echo "please install python setuptools" >&1; exit 1; }
 set -o xtrace
 mkdir -p $WORKDIR
 pwdfile="$(cd "$(dirname $confdir/passwords.yml)";pwd)/$(basename $confdir/passwords.yml)"
-cp $confdir/globals.yml $confdir/$INVENTORY extras.yml $WORKDIR || exit -1
+cp $confdir/globals.yml $confdir/$INVENTORY extras.yml extras.var $WORKDIR || exit -1
 cd $WORKDIR
 virtualenv $VENVDIR || exit -1
 source ${VENVDIR}/bin/activate
@@ -112,6 +112,6 @@ if $gen_pwd; then
     vim $pwdfile
 fi
 
-cp globals.yml $INVENTORY $pwdfile $ETCKOLLA || exit -1
+cp globals.yml $INVENTORY $pwdfile extras.var $ETCKOLLA || exit -1
 
 ansible_ping_hosts || exit -4

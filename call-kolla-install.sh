@@ -106,6 +106,6 @@ if ! $skip_post; then
 fi
 
 if ! $skip_extra; then
-    echo -e "\nansible-playbook -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml"
-    ansible-playbook -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml || exit 5
+    echo -e "\nansible-playbook -e @$ETCKOLLA/globals.yml -e @$ETCKOLLA/extras.var -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml"
+    ansible-playbook -e @$ETCKOLLA/globals.yml -e @$ETCKOLLA/extras.var -i $ETCKOLLA/$INVENTORY $argstr2 extras.yml || exit 5
 fi

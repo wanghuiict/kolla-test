@@ -4,9 +4,9 @@
   tasks:
   - name: get local python packages
     set_fact:
-        local_py_zun: http://10.10.131.3/images/tianni/zun-4.0.2.dev1-py2-none-any.whl
-        local_py_zunclient: http://10.10.131.3/images/tianni/python_zunclient-3.6.1.dev1-py2-none-any.whl
-        local_py_zun_ui: http://10.10.131.3/images/tianni/zun_ui-4.0.1.dev1-py2-none-any.whl
+        py_zun: "{{ zun_dist }}"
+        py_zunclient: "{{ zunclient_dist }}"
+        py_zun_ui: "{{ zun_ui_dist }}"
 
 - name: update python package(s) in {{ container_name }}
   hosts: zun-compute
@@ -15,14 +15,16 @@
     container_name: zun_compute
     container_user: root
     update_package: 
-      - "{{ local_py_zun }}"
+      - "{{ py_zun }}"
   tasks:
   - name: update {{ update_package }}
     shell: |
       docker exec -u {{ container_user }} -it {{ container_name }} pip install {{ update_package | join(' ') }}
+    when: enable_zun == "yes"
   - name: restart {{ container_name }} container
     shell: |
       docker restart {{ container_name }}
+    when: enable_zun == "yes"
 
 - name: update python package(s) in {{ container_name }}
   hosts: control
@@ -31,14 +33,16 @@
     container_name: kolla_toolbox
     container_user: ansible
     update_package: 
-      - "{{ local_py_zunclient }}"
+      - "{{ py_zunclient }}"
   tasks:
   - name: update {{ update_package }}
     shell: |
       docker exec -u {{ container_user }} -it {{ container_name }} pip install {{ update_package | join(' ') }}
+    when: enable_zun == "yes"
   - name: restart {{ container_name }} container
     shell: |
       docker restart {{ container_name }}
+    when: enable_zun == "yes"
 
 - name: update python package(s) in {{ container_name }}
   hosts: horizon
@@ -47,13 +51,15 @@
     container_name: horizon
     container_user: root
     update_package: 
-      - "{{ local_py_zunclient }}"
-      - "{{ local_py_zun_ui }}"
+      - "{{ py_zunclient }}"
+      - "{{ py_zun_ui }}"
   tasks:
   - name: update {{ update_package }}
     shell: |
       docker exec -u {{ container_user }} -it {{ container_name }} pip install {{ update_package | join(' ') }}
+    when: enable_zun == "yes"
   - name: restart {{ container_name }} container
     shell: |
       docker restart {{ container_name }}
+    when: enable_zun == "yes"
 
