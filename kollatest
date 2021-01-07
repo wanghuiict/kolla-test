@@ -41,7 +41,7 @@ if [ $# -eq 0 ];then
   echo -e "    push local docker imges to registry host"
   echo -e "        # $myname [-u username] [-p password] [-h host] [-P port] push [[REPOSITORY[:TAG]]]\n"
   echo -e "    print repositories w/ tags in docker registry"
-  echo -e "        # $myname [-u username] [-p password] [-h host] [-P port] print\n"
+  echo -e "        # $myname [-u username] [-p password] [-h host] [-P port] print [markdown | value]\n"
   echo -e "    copy certificate to remote host (must be run on the registry host after 'create')"
   echo -e "        # $myname [-d registry_directory] cp-cert <remote>"
   echo -e "\nOptions:"
