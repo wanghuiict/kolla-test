@@ -5,7 +5,7 @@
 [ -z "$WORKDIR" ] && export WORKDIR="/home/kolla"
 [ -z "$VENVDIR" ] && export VENVDIR="usr"
 [ -z "$KOLLADIR" ] && export KOLLADIR="${WORKDIR}/${VENVDIR}/share/kolla-ansible"
-[ -z "$KOLLAVER" ] && export KOLLAVER="9.1.0.post2"
+[ -z "$KOLLAVER" ] && export KOLLAVER="9.1.0.post3"
 [ -z "$ETCKOLLA" ] && export ETCKOLLA="/etc/kolla"
 [ -z "$INVENTORY" ] && export INVENTORY="multinode"
 

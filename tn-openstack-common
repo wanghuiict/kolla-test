@@ -96,7 +96,7 @@ fi
 
 # check kolla verison
 if [ "$(pip show kolla-ansible |grep "^Version" |awk '{print $2}')" != "$KOLLAVER" ] ;then
-  echo "ERROR: kolla-ansible version mismatch!" >&1
+  echo "ERROR: kolla-ansible version mismatch! $KOLLAVER not found" >&1
   exit -2
 fi
 
