@@ -4,12 +4,12 @@ detect_qemu_proc() {
     local host=$1
     local vmuuid=$2
 
-    ssh -o "BatchMode yes" -n $host "hostname"
+    ssh -o "BatchMode yes" -l root -n $host "hostname"
     if [ $? -ne 0 ]; then
         echo "ssh error" >&1
         exit -1
     fi
-    ssh -o "BatchMode yes" -n $host "ps -ef |grep \"qemu-\" |grep [${vmuuid:0:1}]${vmuuid:1}"
+    ssh -o "BatchMode yes" -l root -n $host "ps -ef |grep \"qemu-\" |grep [${vmuuid:0:1}]${vmuuid:1}"
     return $?
 }
 
@@ -72,7 +72,8 @@ get_nova_conn() {
     local a=
     local str1=$(crudini --get /etc/nova/nova.conf database connection)
     # e.g. mysql+pymysql://nova:be247cdd33174a4b@10.10.144.6/nova
-    str1=${str1/*\/\//}
+    # for kolla, e.g. mysql+pymysql://nova_api:BPgJz6AtVTF5HM1i9mmUD209hsXzJvbmO8tRS2Cg@10.10.149.28:3306/nova_api
+    str1=${str1/*\/\//} # remove "mysql+pymysql://"
     IFS=$':@/'
     for a in $str1;do
      case $i in
@@ -85,13 +86,13 @@ get_nova_conn() {
        2 ) #echo mysql server $a
            NOVADBADDR=$a
          ;;
-       3 ) #echo mysql database $a
-           NOVADBNAME=$a
-         ;;
      esac 
      ((i++))
     done 
     IFS=$oldifs
+
+    # DB is "nova", not "nova_api"
+    NOVADBNAME=nova
 
     [[ -z "$NOVAUSER" || -z "$NOVADBADDR" || -z "$NOVADBNAME" ]] && { echo "check nova.conf"; exit -1; }
 }
@@ -194,6 +195,7 @@ echo "vm uuid: $vmuuid"
 openstack server show $vmuuid
 
 vmhost=$(get_vm_host $vmuuid|tail -n 1|awk '{print $2}')
+[ -z "$vmhost" ] && exit 2
 echo "$vmuuid is on $vmhost"
 
 if [ $# -eq 1 ]; then
@@ -260,7 +262,7 @@ echo "waiting for vm $vmuuid stopped on ${dest}"
 wait_vm_stop $dest $vmuuid y
 
 echo "replace $vmuuid VIF"
-replacevif.sh $vmuuid
+sh replacevif.sh $vmuuid
 echo "vm $vmuuid moved completed."
 openstack server list --host "$dest"
 

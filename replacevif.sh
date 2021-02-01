@@ -71,67 +71,18 @@ _cleanup() {
 trap '_cleanup' HUP INT TERM EXIT
 
 get_myinfo() {
-    local portid=
-    local netid=
-    local netid2=
-    local subnets=
-    local mac=
-    local fixedip=
-    local fid=
-    local fip=
-    local fixed2=
-    local port=
-    local ip_address=
-    local floatingip=
-    local floatingid=
-
     # XXX: port network:dhcp may contain 2 ip_address
-    { openstack port list -c "ID" -c "MAC Address" -c "Fixed IP Addresses" -f value --project $PROJUUID; ret=$?; } > ${PORTINFO}
+    { openstack port list -c "ID" -c "MAC Address" -c "Fixed IP Addresses" --project $PROJUUID -f json; ret=$?; } > ${PORTINFO}
     [ $ret -eq 0 ] || return 1
     
-    { openstack network list -c "ID" -c "Subnets" --project $PROJUUID -f value; ret=$?; } > ${NETINFO}
-    [ $ret -eq 0 ] || return 1
+    { openstack network list -c "ID" -c "Subnets" --project $PROJUUID -f json; ret=$?; } > ${NETINFO}
+    [ $ret -eq 0 ] || return 2
     
-    { openstack floating ip list -c "ID" -c "Floating IP Address" -c "Fixed IP Address" -c "Port" --project $PROJUUID -f value; ret=$?; } > ${FIPINFO}
-    [ $ret -eq 0 ] || return 1
+    { openstack floating ip list -c "ID" -c "Floating IP Address" -c "Fixed IP Address" -c "Port" --project $PROJUUID -f json; ret=$?; } > ${FIPINFO}
+    [ $ret -eq 0 ] || return 3
     
-    echo -n "" > ${MYINFO}
-
-    IFS=$'\n'; for y in $(< $PORTINFO); do
-        unset IFS
-        read portid mac fixedip <<< $y
-
-        # e.g. ip_address='192.168.192.2', subnet_id='d30b3f1d-f0d3-4d4c-a212-c0696a276fc5' 
-        eval ${fixedip}
-        ip_address=$(echo $ip_address |tr -d ",")
-        netid2=
-        IFS=$'\n'; for x in $(< $NETINFO); do
-            unset IFS
-            read netid subnets <<< $x
-            echo $subnets |grep $subnet_id &>/dev/null
-            if [ $? -eq 0 ]; then
-                netid2=$netid
-                break
-            fi
-        done
-        if [ -z "$netid2" ]; then
-            echored "network uuid not found."
-            return 1
-        fi
-
-        floatingip=
-        floatingid=
-        IFS=$'\n';for x in $(< $FIPINFO); do
-            unset IFS
-            read fid fip fixed2 port <<< $x 
-            if [ "$portid" == "$port" ]; then
-                floatingip=$fip
-                floatingid=$fid
-                break
-            fi
-        done
-        echo "$netid2 $subnet_id $portid $ip_address $floatingip $floatingid" >> $MYINFO
-    done
+    # netid subnet_id portid ip_address floatingip floatingid
+    python getport_helper.py ${NETINFO} ${PORTINFO} ${FIPINFO} > $MYINFO
     return 0
 }
 
@@ -193,6 +144,23 @@ attach_port_instance() {
 }
 
 NEWPORT=
+
+get_secgroups() {
+    local portid=$1
+    local f=$(mktemp)
+    openstack port show $portid -c security_group_ids -f json > $f
+    [ $? -ne 0 ] && return 1
+    echo -e "
+import json
+with open(\"$f\") as f:
+    d=json.load(f)
+    for secid in d['security_group_ids']:
+        print secid
+" |python -
+    [ $? -ne 0 ] && return 2
+    rm $f
+}
+
 rebuild_port() {
     local portid=$1
     local subid=$2
@@ -204,12 +172,12 @@ rebuild_port() {
     declare -a sg
 
     local ret=0
-    for x in $(openstack port show ${portid} -f value -c security_group_ids; ret=$?; if [ $ret -ne 0 ]; then echo ret=$ret; fi);do
+    for x in $(get_secgroups $portid; ret=$?; if [ $ret -ne 0 ]; then echo ret=$ret; fi);do
         if [ "${x:0:4}" == "ret=" ]; then
             eval $x
             return $ret
         fi
-        sg[$i]=$(echo $x|tr -d ",")
+        sg[$i]=$x
         ((i++))
     done
 
